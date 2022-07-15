@@ -1,9 +1,42 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import Head from "next/head";
+import Image from "next/image";
+import styles from "../styles/Home.module.css";
+import { Input, Select, MenuItem } from "@mui/material";
+import { useForm, Controller } from "react-hook-form";
+import Box from "@mui/material/Box";
+import Stepper from "@mui/material/Stepper";
+import Step from "@mui/material/Step";
+import StepLabel from "@mui/material/StepLabel";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import Paper from "@mui/material/Paper";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+
+const defaultValues = {
+  select: "",
+  input: ""
+};
+
+const validationSchema = yup.object().shape({
+  select: yup.object(),
+  input: yup.string()
+})
+
+const schema = z.object({
+  select: z.object(),
+  input: z.string()
+})
 
 export default function Home() {
+  const { handleSubmit, reset, watch, control, register } = useForm({
+    defaultValues: defaultValues
+  });
+  const onSubmit = (data) => console.log(data);
+
   return (
     <div className={styles.container}>
       <Head>
@@ -14,7 +47,28 @@ export default function Home() {
 
       <main className={styles.main}>
         <a href="/api/auth/login">Login</a>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Controller
+            render={({ field }) => (
+              <Select {...field}>
+                <MenuItem value={10}>Ten</MenuItem>
+                <MenuItem value={20}>Twenty</MenuItem>
+              </Select>
+            )}
+            control={control}
+            name="select"
+            defaultValue={10}
+            rules={{required: true}}
+          />
+
+          <Input {...register("input", {required: true})} />
+
+          <button type="button" onClick={() => reset({ defaultValues })}>
+            Reset
+          </button>
+          <input type="submit" />
+        </form>
       </main>
     </div>
-  )
+  );
 }
